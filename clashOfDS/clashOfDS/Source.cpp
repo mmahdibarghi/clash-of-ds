@@ -83,6 +83,7 @@ public:
 	~castle();
 	void addToNeighbours(path* toPath, castle* neighbours);
 	void addInPath(path* inPath,gate& ingate);
+	void addSoldier(soldier& newSoldier);
 private:
 	int num;
 	int owner;
@@ -122,6 +123,11 @@ void castle::addInPath(path * inPath,gate& ingate)
 {
 	inpath.push_back(inPath);
 	gates.push_back(ingate);
+}
+
+void castle::addSoldier(soldier & newSoldier)
+{
+	//TO DO: Add new soldier to avl tree of allSoldier
 }
 
 
@@ -177,7 +183,7 @@ class soldier
 public:
 	soldier();
 	~soldier();
-
+	soldier(int power, castle* home);
 private:
 	int power;
 	castle* home;
@@ -188,10 +194,21 @@ private:
 
 soldier::soldier()
 {
+	pathWhereIs = nullptr;
+	power = 0;
+
 }
 
 soldier::~soldier()
 {
+}
+
+soldier::soldier(int power, castle * home)
+{
+	this->power = power;
+	this->home = home;
+	this->castleWhereIs = home;
+	this->pathWhereIs = nullptr;
 }
 
 
@@ -262,7 +279,7 @@ int main()
 	{
 		for (int j = 0; j < ncastle; j++)
 		{
-			cout << "Enter length of road from castle " << i << " to castle " << j << " (if there is no way Enter 0)" << endl;
+			cout << "Enter length of road from castle " << i+1 << " to castle " << j+1 << " (if there is no way Enter 0)" << endl;
 			cin >> roadlength;
 			gate* newgate = new gate(&allCastles[j]);
 			path* fromPath = new path(roadlength, roadlength / speedOfsoldiers, &allCastles[i], &allCastles[j],newgate);
@@ -275,15 +292,19 @@ int main()
 
 	for (int i = 0; i < ncastle; i++)
 	{
-		cout << "Enter number of soldier in castle " << i << " :" << endl;
+		cout << "Enter number of soldier in castle " << i+1 << " :" << endl;
 		cin >> nsoldier;
 		for (int j = 0; j < nsoldier; j++)
 		{
 			cout << "Enter soldier " << j << " power:" << endl;
 			cin >> soldierPower;
+			soldier* newSoldier = new soldier(soldierPower, &allCastles[i]);
+			allCastles[i].addSoldier(*newSoldier);
 		}
 
 	}
-
+	/***************************      now start making DFS array of castles         *******************************************/
+	
+	
 	return 0;
 }
