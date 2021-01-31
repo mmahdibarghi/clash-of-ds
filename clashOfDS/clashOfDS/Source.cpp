@@ -8,7 +8,28 @@
 
 class path;
 class soldier;
+class army;
 
+class gate
+{
+public:
+	gate();
+	~gate();
+
+private:
+	//TO DO : fibo tree for attacks
+	//queue for all soldier wait to attak
+	int waitSoldier;
+
+};
+
+gate::gate()
+{
+}
+
+gate::~gate()
+{
+}
 
 class castle
 {
@@ -25,8 +46,8 @@ private:
 	vector<path*> outPath;
 	vector<path*> inpath;
 	stack<soldier> dead;
-
-
+	vector<gate> gates;
+	//TO DO: AVL tree of soldiers;
 
 };
 
@@ -46,12 +67,14 @@ class path
 public:
 	path();
 	~path();
-	castle* from;
-	castle* to;
+	
 
 private:
 	int length;
-
+	int step;
+	castle* from;
+	castle* to;
+	vector<army*> inRoad;
 };
 
 path::path()
@@ -112,6 +135,7 @@ public:
 
 private:
 	queue<soldier> all;
+	int whereInRoad;
 };
 
 army::army()
