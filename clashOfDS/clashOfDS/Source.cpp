@@ -1,9 +1,9 @@
 #include<iostream>
 #include"vector.h"
 #include"node-stack-queue.h"
-
-
-
+#include <windows.h>
+#include"gingil-bingil.h"
+using namespace std;
 
 
 class path;
@@ -156,12 +156,50 @@ army::~army()
 
 
 
-
-
+int capacity;
+int deadCapacity;
 int main()
 {
+	
+	//startShowOff();
+
+	int ncastle=0;
+	int roadlength=0;
+	int speedOfsoldiers=0;
+	int nsoldier=0;
+	int soldierPower = 0;
+	cout << "welcome to CLASH OF DS"<<endl;
+	cout << "Enter number of castles:" << endl;
+	cin >> ncastle;
+
+	cout << "Enter speed of soldiers:" << endl;
+	cin >> speedOfsoldiers;
+	cout << "Enter output capacity of castles:" << endl;
+	cin >> capacity;	
+	cout << "Enter output capacity of dead stacks:" << endl;
+	cin >> deadCapacity;
+
+	for (int i = 0; i < ncastle; i++)
+	{
+		for (int j = 0; j < ncastle; j++)
+		{
+			cout << "Enter length of road from castle " << i << " to castle " << j << " (if there is no way Enter 0)" << endl;
+			cin >> roadlength;
+		}
+	}
 
 
+	for (int i = 0; i < ncastle; i++)
+	{
+		cout << "Enter number of soldier in castle " << i << " :" << endl;
+		cin >> nsoldier;
+		for (int j = 0; j < nsoldier; j++)
+		{
+			cout << "Enter soldier " << j << " power:" << endl;
+			cin >> soldierPower;
+		}
+
+	}
 
 	return 0;
 }

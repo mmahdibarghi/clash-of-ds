@@ -29,5 +29,8 @@
     <ClInclude Include="node-stack-queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="gingil-bingil.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
