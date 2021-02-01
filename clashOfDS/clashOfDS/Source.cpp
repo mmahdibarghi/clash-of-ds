@@ -21,18 +21,19 @@ public:
 	~graphNodes();
 	void setCastle(castle* input);
 	void addConnection(graphNodes* node);
-private:
+	void colornodes(castle** dfsarray);
+//private:
 
 	castle* showCastle;
 	int color;
 	vector<graphNodes*> connections;
-
+	int nconnect;
 };
 
 graphNodes::graphNodes()
 {
 	color = 0;
-
+	nconnect = 0;
 }
 
 graphNodes::~graphNodes()
@@ -47,6 +48,30 @@ void graphNodes::setCastle(castle * input)
 void graphNodes::addConnection(graphNodes * node)
 {
 	connections.push_back(node);
+	nconnect++;
+}
+int ttnode=0;
+void graphNodes::colornodes(castle** dfsarray)
+{
+	if (this->color == 2)
+	{
+		return;
+	}
+	else if(this->color == 1)
+	{
+		return;
+	}
+	else
+	{
+		this->color = 1;
+		dfsarray[ttnode]=this->showCastle;
+		ttnode++;
+		for (int w = 0; w < this->nconnect; w++)
+		{
+			this->connections[w]->colornodes(dfsarray);
+		}
+		this->color = 2;
+	}
 }
 
 
@@ -84,6 +109,7 @@ public:
 	void addToNeighbours(path* toPath, castle* neighbours);
 	void addInPath(path* inPath,gate& ingate);
 	void addSoldier(soldier& newSoldier);
+	int getNum();
 private:
 	int num;
 	int owner;
@@ -128,6 +154,11 @@ void castle::addInPath(path * inPath,gate& ingate)
 void castle::addSoldier(soldier & newSoldier)
 {
 	//TO DO: Add new soldier to avl tree of allSoldier
+}
+
+int castle::getNum()
+{
+	return num;
 }
 
 
@@ -279,13 +310,20 @@ int main()
 	{
 		for (int j = 0; j < ncastle; j++)
 		{
-			cout << "Enter length of road from castle " << i+1 << " to castle " << j+1 << " (if there is no way Enter 0)" << endl;
+			cout << "Enter length of road from castle " << i << " to castle " << j << " (if there is no way Enter 0)" << endl;
 			cin >> roadlength;
-			gate* newgate = new gate(&allCastles[j]);
-			path* fromPath = new path(roadlength, roadlength / speedOfsoldiers, &allCastles[i], &allCastles[j],newgate);
-			allCastles[i].addToNeighbours(fromPath, &allCastles[j]);
-			allCastles[j].addInPath(fromPath,*newgate);
-			allNodes[i].addConnection(&allNodes[j]);
+			if (roadlength == 0)
+			{
+				continue;
+			}
+			else
+			{
+				gate* newgate = new gate(&allCastles[j]);
+				path* fromPath = new path(roadlength, roadlength / speedOfsoldiers, &allCastles[i], &allCastles[j], newgate);
+				allCastles[i].addToNeighbours(fromPath, &allCastles[j]);
+				allCastles[j].addInPath(fromPath, *newgate);
+				allNodes[i].addConnection(&allNodes[j]);
+			}
 		}
 	}
 
@@ -304,7 +342,13 @@ int main()
 
 	}
 	/***************************      now start making DFS array of castles         *******************************************/
-	
-	
+	castle** dfsCastles = new castle*[ncastle];
+	allNodes[0].colornodes(dfsCastles);
+	for (int i = 0; i < ncastle; i++)
+	{
+		cout <<dfsCastles[i]->getNum()<<"   "<<endl;
+	}
+	/*********************************    Now Go for the part & start counting days    *************************************/
+
 	return 0;
 }
