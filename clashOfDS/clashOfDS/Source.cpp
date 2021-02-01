@@ -9,6 +9,8 @@ int deadCapacity;
 int idCounter=0;
 int speedOfsoldiers = 0;
 int ncastle = 0;
+int days;
+int theWinner = 0;
 class path;
 class soldier;
 class army;
@@ -344,11 +346,61 @@ int main()
 	/***************************      now start making DFS array of castles         *******************************************/
 	castle** dfsCastles = new castle*[ncastle];
 	allNodes[0].colornodes(dfsCastles);
+	/*
 	for (int i = 0; i < ncastle; i++)
 	{
 		cout <<dfsCastles[i]->getNum()<<"   "<<endl;
 	}
+	*/
+	
+	
+	
+	
+	
 	/*********************************    Now Go for the part & start counting days    *************************************/
+	cout << "choose game mode (Enter number of choose):" << endl << "1.play in specific time and days" << endl << "2.play until find the winner" << endl;
+	int choose;
+	cin >> choose;
+	if (choose == 1)
+	{
+		cout << "Enter how many days do you want to game is in progress:" << endl;
+		cin >> days;
+		for (int d = 0; d < days; d++)
+		{
+			for (int c = 0; c < ncastle; c++)
+			{
 
+			}
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	else
+	{
+		while (theWinner == 0)
+		{
+			for (int c = 0; c < ncastle; c++)
+			{
+
+			}
+		}
+	}
 	return 0;
 }
