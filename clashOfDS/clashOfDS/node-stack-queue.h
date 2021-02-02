@@ -165,7 +165,7 @@ public:
 	queue();
 	~queue();
 	void push(t& input);
-	t pop();
+	t& pop();
 	int getsize();
 	t& search(t input);
 	void print();
@@ -210,12 +210,12 @@ void queue<t>::push(t& input)
 }
 
 template<typename t>
-t queue<t>::pop()
+t& queue<t>::pop()
 {
 	if (size == 0)
 	{
-		//throw "queue is empty";
-		return NULL;
+		t nullsender;
+		return nullsender;
 	}
 	node<t>* tmp;
 	tmp = rear;

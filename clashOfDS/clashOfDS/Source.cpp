@@ -162,140 +162,11 @@ int soldier::getPower()
 
 
 
-class army
-{
-public:
-	army();
-	army(path* pathGoingToGo, castle* castleGoingToGo);
-	~army();
-	void addToArmy(soldier& input);
-	void forward();
-	int getWhereIs();
-	void goInEnemyCastle(gate* outGateWay);
-private:
-	queue<soldier> all;
-	int whereInRoad;
-	int population;
-	path* pathWhereIs;
-	castle* castleWhereIs;
-	friend class path;
-};
-
-army::army()
-{
-	whereInRoad = 0;
-	population = 0;
-	pathWhereIs = nullptr;
-	castleWhereIs = nullptr;
-}
-
-army::~army()
-{
-}
-
-
-army::army(path * pathGoingToGo, castle * castleGoingToGo)
-{
-	whereInRoad = 0;
-	population = 0;
-	pathWhereIs = pathGoingToGo;
-	castleWhereIs = castleGoingToGo;
-}
-
-void army::addToArmy(soldier & input)
-{
-	input.setcastleGo(castleWhereIs);
-	input.setwayGo(pathWhereIs);
-	all.push(input);
-	population++;
-}
-
-void army::forward()
-{
-	this->whereInRoad++;
-}
-
-int army::getWhereIs()
-{
-	return whereInRoad;
-}
-
-void army::goInEnemyCastle(gate * outGateWay)
-{
-}
 
 
 
 
 
-
-
-
-
-
-class path
-{
-public:
-	path();
-	~path();
-	path(int length, int step, castle* from, castle* to, gate* outgate);
-	castle* getTo();
-	void addArmy(army* input);
-	void stepWay();
-private:
-	int length;
-	int step;
-	castle* from;
-	castle* to;
-	vector<army*> inRoad;
-	gate* outGate;
-};
-
-path::path()
-{
-	length = 0;
-	step = 0;
-
-}
-
-path::~path()
-{
-}
-
-path::path(int length, int step, castle * from, castle * to, gate* outgate)
-{
-	this->length = length;
-	this->step = step;
-	this->from = from;
-	this->to = to;
-	this->outGate = outgate;
-}
-
-
-castle * path::getTo()
-{
-	return to;
-}
-
-void path::addArmy(army * input)
-{
-	inRoad.push_back(input);
-}
-
-void path::stepWay()
-{
-	for (int i = 0; i < inRoad.getSizeOfFullBlocks(); i++)
-	{
-		inRoad[i]->forward();
-		if (inRoad[i]->getWhereIs() == step)
-		{
-			inRoad[i]->castleWhereIs = this->to;
-			inRoad[i]->pathWhereIs = nullptr;
-			inRoad[i]->goInEnemyCastle(outGate);
-
-		}
-	}
-}
 
 
 
@@ -1464,25 +1335,20 @@ void fiboHeap::updateAll()
 
 /********************************************************************************************/
 
-
-
-
-
-
-
-
-
 class gate
 {
 public:
 	gate();
 	~gate();
 	gate(castle* mycastle);
+	void pushSoldier(soldier& input);
+	void improveWaitPopulation(int input);
 private:
 	fiboHeap warZone;
 	queue<soldier> waitToAttack;
 	int waitSoldier;
 	castle* forWhichCastle;
+
 };
 
 gate::gate()
@@ -1497,6 +1363,152 @@ gate::gate(castle * mycastle)
 {
 	this->forWhichCastle = mycastle;
 }
+
+
+
+
+
+class army
+{
+public:
+	army();
+	army(path* pathGoingToGo, castle* castleGoingToGo);
+	~army();
+	void addToArmy(soldier& input);
+	void forward();
+	int getWhereIs();
+	void goInEnemyCastle(gate* outGateWay);
+private:
+	queue<soldier> all;
+	int whereInRoad;
+	int population;
+	path* pathWhereIs;
+	castle* castleWhereIs;
+	friend class path;
+};
+
+army::army()
+{
+	whereInRoad = 0;
+	population = 0;
+	pathWhereIs = nullptr;
+	castleWhereIs = nullptr;
+}
+
+army::~army()
+{
+}
+
+
+army::army(path * pathGoingToGo, castle * castleGoingToGo)
+{
+	whereInRoad = 0;
+	population = 0;
+	pathWhereIs = pathGoingToGo;
+	castleWhereIs = castleGoingToGo;
+}
+
+void army::addToArmy(soldier & input)
+{
+	input.setcastleGo(castleWhereIs);
+	input.setwayGo(pathWhereIs);
+	all.push(input);
+	population++;
+}
+
+void army::forward()
+{
+	this->whereInRoad++;
+}
+
+int army::getWhereIs()
+{
+	return whereInRoad;
+}
+
+void army::goInEnemyCastle(gate * outGateWay)
+{
+	outGateWay->improveWaitPopulation(this->population);
+	while (this->all.getsize() != 0)
+	{
+		outGateWay->pushSoldier(this->all.pop());
+	}
+
+
+
+}
+
+
+class path
+{
+public:
+	path();
+	~path();
+	path(int length, int step, castle* from, castle* to, gate* outgate);
+	castle* getTo();
+	void addArmy(army* input);
+	void stepWay();
+private:
+	int length;
+	int step;
+	castle* from;
+	castle* to;
+	vector<army*> inRoad;
+	gate* outGate;
+};
+
+path::path()
+{
+	length = 0;
+	step = 0;
+
+}
+
+path::~path()
+{
+}
+
+path::path(int length, int step, castle * from, castle * to, gate* outgate)
+{
+	this->length = length;
+	this->step = step;
+	this->from = from;
+	this->to = to;
+	this->outGate = outgate;
+}
+
+
+castle * path::getTo()
+{
+	return to;
+}
+
+void path::addArmy(army * input)
+{
+	inRoad.push_back(input);
+}
+
+void path::stepWay()
+{
+	for (int i = 0; i < inRoad.getSizeOfFullBlocks(); i++)
+	{
+		inRoad[i]->forward();
+		if (inRoad[i]->getWhereIs() == step)
+		{
+			inRoad[i]->castleWhereIs = this->to;
+			inRoad[i]->pathWhereIs = nullptr;
+			inRoad[i]->goInEnemyCastle(outGate);
+
+		}
+	}
+}
+
+
+
+
+
+
+
 
 class castle
 {
@@ -1749,3 +1761,13 @@ int main()
 	return 0;
 }
 
+void gate::pushSoldier(soldier & input)
+{
+	waitToAttack.push(input);
+}
+
+void gate::improveWaitPopulation(int input)
+{
+	this->waitSoldier += input;
+
+}
