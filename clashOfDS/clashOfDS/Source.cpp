@@ -18,8 +18,11 @@ class path;
 class soldier;
 class army;
 class castle;
-
-
+class fiboNode;
+class avlNode;
+class fiboHeap;
+class avlTree;
+class gate;
 class graphNodes
 {
 public:
@@ -81,91 +84,6 @@ void graphNodes::colornodes(castle** dfsarray)
 }
 
 
-class gate
-{
-public:
-	gate();
-	~gate();
-	gate(castle* mycastle);
-private:
-	//TO DO : fibo tree for attacks
-	//queue for all soldier wait to attak
-	int waitSoldier;
-	castle* forWhichCastle;
-};
-
-gate::gate()
-{
-}
-
-gate::~gate()
-{
-}
-
-gate::gate(castle * mycastle)
-{
-	this->forWhichCastle = mycastle;
-}
-
-class castle
-{
-public:
-	castle();
-	~castle();
-	void addToNeighbours(path* toPath, castle* neighbours);
-	void addInPath(path* inPath,gate& ingate);
-	void addSoldier(soldier& newSoldier);
-	int getNum();
-private:
-	int num;
-	int owner;
-	int publication;
-	int nNeighbours;
-	vector<castle*> Neighbours;
-	vector<path*> outPath;
-	vector<path*> inpath;
-	stack<soldier> dead;
-	vector<gate> gates;
-	//TO DO: AVL tree of soldiers;
-
-};
-
-castle::castle()
-{
-	num = idCounter;
-	owner = idCounter;
-	publication = 0;
-	nNeighbours = 0;
-	idCounter++;
-
-}
-
-castle::~castle()
-{
-}
-
-void castle::addToNeighbours(path * toPath, castle * neighbours)
-{
-	this->nNeighbours++;
-	Neighbours.push_back(neighbours);
-	outPath.push_back(toPath);
-}
-
-void castle::addInPath(path * inPath,gate& ingate)
-{
-	inpath.push_back(inPath);
-	gates.push_back(ingate);
-}
-
-void castle::addSoldier(soldier & newSoldier)
-{
-	//TO DO: Add new soldier to avl tree of allSoldier
-}
-
-int castle::getNum()
-{
-	return num;
-}
 
 
 
@@ -227,7 +145,7 @@ private:
 	castle* home;
 	path* pathWhereIs;
 	castle* castleWhereIs;
-
+	fiboNode* fiboattak;
 };
 
 soldier::soldier()
@@ -236,6 +154,7 @@ soldier::soldier()
 	power = -1;
 	home = nullptr;
 	castleWhereIs = nullptr;
+	fiboattak = nullptr;
 }
 
 soldier::~soldier()
@@ -248,6 +167,7 @@ soldier::soldier(int power, castle * home)
 	this->home = home;
 	this->castleWhereIs = home;
 	this->pathWhereIs = nullptr;
+	fiboattak = nullptr;
 }
 
 
@@ -473,14 +393,15 @@ private:
 	soldier nullSoldier;
 public:
 
+	
+	avlTree();
+	avlTree(soldier val);
 	void balanceAtavlNode(avlNode* n);
 	avlNode* findavlNode(int soldierPower);
 	void printSubtree(avlNode* subtree, int depth);
 	void rotateLeft(avlNode* n);
 	void rotateRight(avlNode* n);
 	void setRoot(avlNode* n);
-	avlTree();
-	avlTree(soldier val);
 	int getHeight();
 	void insert(soldier val);
 	void print();
@@ -1440,6 +1361,110 @@ void fiboHeap::updateAll()
 
 
 /********************************************************************************************/
+
+
+
+
+
+
+
+
+
+class gate
+{
+public:
+	gate();
+	~gate();
+	gate(castle* mycastle);
+private:
+	fiboHeap warZone;
+	queue<soldier> waitToAttack;
+	int waitSoldier;
+	castle* forWhichCastle;
+};
+
+gate::gate()
+{
+}
+
+gate::~gate()
+{
+}
+
+gate::gate(castle * mycastle)
+{
+	this->forWhichCastle = mycastle;
+}
+
+class castle
+{
+public:
+	castle();
+	~castle();
+	void addToNeighbours(path* toPath, castle* neighbours);
+	void addInPath(path* inPath, gate& ingate);
+	void addSoldier(soldier& newSoldier);
+	int getNum();
+private:
+	int num;
+	int owner;
+	int publication;
+	int nNeighbours;
+	vector<castle*> Neighbours;
+	vector<path*> outPath;
+	vector<path*> inpath;
+	stack<soldier> dead;
+	vector<gate> gates;
+	avlTree allSoldier;
+
+
+};
+
+castle::castle()
+{
+
+	num = idCounter;
+	owner = idCounter;
+	publication = 0;
+	nNeighbours = 0;
+	idCounter++;
+
+
+}
+
+castle::~castle()
+{
+}
+
+void castle::addToNeighbours(path * toPath, castle * neighbours)
+{
+	this->nNeighbours++;
+	Neighbours.push_back(neighbours);
+	outPath.push_back(toPath);
+}
+
+void castle::addInPath(path * inPath, gate& ingate)
+{
+	inpath.push_back(inPath);
+	gates.push_back(ingate);
+}
+
+void castle::addSoldier(soldier & newSoldier)
+{
+	allSoldier.insert(newSoldier);
+	publication++;
+}
+
+int castle::getNum()
+{
+	return num;
+}
+
+
+
+
+
+
 
 
 
