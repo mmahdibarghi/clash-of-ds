@@ -32,5 +32,14 @@
     <ClInclude Include="gingil-bingil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="avlTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="allSourse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

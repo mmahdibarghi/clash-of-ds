@@ -117,8 +117,11 @@
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="allSourse.h" />
+    <ClInclude Include="avlTree.h" />
     <ClInclude Include="gingil-bingil.h" />
     <ClInclude Include="Header.h" />
+    <ClInclude Include="Header1.h" />
     <ClInclude Include="node-stack-queue.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
