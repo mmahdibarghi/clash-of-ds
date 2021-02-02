@@ -119,6 +119,7 @@
   <ItemGroup>
     <ClInclude Include="allSourse.h" />
     <ClInclude Include="avlTree.h" />
+    <ClInclude Include="fibonacci heap.h" />
     <ClInclude Include="gingil-bingil.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="Header1.h" />

@@ -3,6 +3,7 @@
 #include"node-stack-queue.h"
 #include <windows.h>
 #include<cmath>
+#include<math.h>
 #include"gingil-bingil.h"
 
 using namespace std;
