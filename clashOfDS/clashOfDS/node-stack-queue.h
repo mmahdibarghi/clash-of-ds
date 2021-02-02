@@ -164,7 +164,7 @@ class queue
 public:
 	queue();
 	~queue();
-	void push(t input);
+	void push(t& input);
 	t pop();
 	int getsize();
 	t& search(t input);
@@ -194,7 +194,7 @@ queue<t>::~queue()
 }
 
 template<typename t>
-void queue<t>::push(t input)
+void queue<t>::push(t& input)
 {
 	if (size == 0)
 	{

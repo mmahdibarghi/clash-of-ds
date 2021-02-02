@@ -10,6 +10,7 @@ using namespace std;
 int capacity;
 double deadCapacity;
 int idCounter=0;
+int soldiercounter = 0;
 int speedOfsoldiers = 0;
 int ncastle = 0;
 int days;
@@ -88,13 +89,159 @@ void graphNodes::colornodes(castle** dfsarray)
 
 
 
+
+
+
+
+
+class soldier
+{
+public:
+	soldier();
+	~soldier();
+	soldier(int power, castle* home);
+	void setcastleGo(castle* goingToGo);
+	void setwayGo(path* goingToGo);
+	int getPower();
+	int id;
+private:
+	int power;
+	castle* home;
+	path* pathWhereIs;
+	castle* castleWhereIs;
+	fiboNode* fiboattak;
+};
+
+soldier::soldier()
+{
+	pathWhereIs = nullptr;
+	power = -1;
+	home = nullptr;
+	castleWhereIs = nullptr;
+	fiboattak = nullptr;
+	id = 0;
+}
+
+soldier::~soldier()
+{
+}
+
+soldier::soldier(int power, castle * home)
+{
+	this->power = power;
+	this->home = home;
+	this->castleWhereIs = home;
+	this->pathWhereIs = nullptr;
+	fiboattak = nullptr;
+	id = soldiercounter;
+	soldiercounter++;
+}
+
+
+
+void soldier::setcastleGo(castle * goingToGo)
+{
+	this->castleWhereIs = goingToGo;
+
+}
+
+void soldier::setwayGo(path * goingToGo)
+{
+	this->pathWhereIs = goingToGo;
+}
+
+int soldier::getPower()
+{
+	return power;
+}
+
+
+
+
+
+
+
+
+class army
+{
+public:
+	army();
+	army(path* pathGoingToGo, castle* castleGoingToGo);
+	~army();
+	void addToArmy(soldier& input);
+	void forward();
+	int getWhereIs();
+	void goInEnemyCastle(gate* outGateWay);
+private:
+	queue<soldier> all;
+	int whereInRoad;
+	int population;
+	path* pathWhereIs;
+	castle* castleWhereIs;
+	friend class path;
+};
+
+army::army()
+{
+	whereInRoad = 0;
+	population = 0;
+	pathWhereIs = nullptr;
+	castleWhereIs = nullptr;
+}
+
+army::~army()
+{
+}
+
+
+army::army(path * pathGoingToGo, castle * castleGoingToGo)
+{
+	whereInRoad = 0;
+	population = 0;
+	pathWhereIs = pathGoingToGo;
+	castleWhereIs = castleGoingToGo;
+}
+
+void army::addToArmy(soldier & input)
+{
+	input.setcastleGo(castleWhereIs);
+	input.setwayGo(pathWhereIs);
+	all.push(input);
+	population++;
+}
+
+void army::forward()
+{
+	this->whereInRoad++;
+}
+
+int army::getWhereIs()
+{
+	return whereInRoad;
+}
+
+void army::goInEnemyCastle(gate * outGateWay)
+{
+}
+
+
+
+
+
+
+
+
+
+
 class path
 {
 public:
 	path();
 	~path();
-	path(int length, int step, castle* from, castle* to,gate* outgate);
-
+	path(int length, int step, castle* from, castle* to, gate* outgate);
+	castle* getTo();
+	void addArmy(army* input);
+	void stepWay();
 private:
 	int length;
 	int step;
@@ -115,7 +262,7 @@ path::~path()
 {
 }
 
-path::path(int length, int step, castle * from, castle * to,gate* outgate)
+path::path(int length, int step, castle * from, castle * to, gate* outgate)
 {
 	this->length = length;
 	this->step = step;
@@ -125,84 +272,30 @@ path::path(int length, int step, castle * from, castle * to,gate* outgate)
 }
 
 
-
-
-
-
-
-
-
-
-class soldier
+castle * path::getTo()
 {
-public:
-	soldier();
-	~soldier();
-	soldier(int power, castle* home);
-	int getPower();
-private:
-	int power;
-	castle* home;
-	path* pathWhereIs;
-	castle* castleWhereIs;
-	fiboNode* fiboattak;
-};
-
-soldier::soldier()
-{
-	pathWhereIs = nullptr;
-	power = -1;
-	home = nullptr;
-	castleWhereIs = nullptr;
-	fiboattak = nullptr;
+	return to;
 }
 
-soldier::~soldier()
+void path::addArmy(army * input)
 {
+	inRoad.push_back(input);
 }
 
-soldier::soldier(int power, castle * home)
+void path::stepWay()
 {
-	this->power = power;
-	this->home = home;
-	this->castleWhereIs = home;
-	this->pathWhereIs = nullptr;
-	fiboattak = nullptr;
+	for (int i = 0; i < inRoad.getSizeOfFullBlocks(); i++)
+	{
+		inRoad[i]->forward();
+		if (inRoad[i]->getWhereIs() == step)
+		{
+			inRoad[i]->castleWhereIs = this->to;
+			inRoad[i]->pathWhereIs = nullptr;
+			inRoad[i]->goInEnemyCastle(outGate);
+
+		}
+	}
 }
-
-
-
-int soldier::getPower()
-{
-	return power;
-}
-
-
-
-
-
-
-
-
-class army
-{
-public:
-	army();
-	~army();
-
-private:
-	queue<soldier> all;
-	int whereInRoad;
-};
-
-army::army()
-{
-}
-
-army::~army()
-{
-}
-
 
 
 
@@ -391,6 +484,7 @@ private:
 	avlNode* root;
 	avlNode* nearNode;
 	soldier nullSoldier;
+	int size;
 public:
 
 	
@@ -411,18 +505,20 @@ public:
 	soldier& sendGateWar(int enemysoldierPower);
 	soldier& attakToNeighber();
 	soldier& findDeepthNode(avlNode*subtree,int depth);
+	int getsize();
 };
 
 
 avlTree::avlTree() {
 	root = nullptr;
 	nearNode = nullptr;
+	size = 0;
 }
 
 
 avlTree::avlTree(soldier val) {
 	root = new avlNode(val);
-
+	size = 1;
 }
 
 void avlTree::balanceAtavlNode(avlNode* n) {
@@ -475,6 +571,7 @@ int avlTree::getHeight() {
 
 
 void avlTree::insert(soldier val) {
+	size++;
 	int insertPower = val.getPower();
 	if (root == nullptr)
 	{
@@ -560,7 +657,7 @@ void avlTree::printSubtree(avlNode* subtree, int depth) {
 
 bool avlTree::remove(soldier val) {
 
-
+	size--;
 	avlNode* toBeRemoved = findavlNode(val.getPower());
 	if (toBeRemoved == nullptr)
 		return false;
@@ -707,7 +804,7 @@ bool avlTree::remove(soldier val) {
 
 bool avlTree::removeByPointer(avlNode * toBeRemoved)
 {
-
+	size--;
 	bool isLeft = 0;
 	avlNode* p = toBeRemoved->getParent();
 	if (p != nullptr && p->getLeft() == toBeRemoved)
@@ -870,6 +967,11 @@ soldier & avlTree::findDeepthNode(avlNode * subtree, int depth)
 
 	else
 		return subtree->getData();
+}
+
+int avlTree::getsize()
+{
+	return size;
 }
 
 
@@ -1404,11 +1506,15 @@ public:
 	void addToNeighbours(path* toPath, castle* neighbours);
 	void addInPath(path* inPath, gate& ingate);
 	void addSoldier(soldier& newSoldier);
+	void attack();
+	void wardef();
 	int getNum();
+	int getpopulation();
+
 private:
 	int num;
 	int owner;
-	int publication;
+	int population;
 	int nNeighbours;
 	vector<castle*> Neighbours;
 	vector<path*> outPath;
@@ -1425,7 +1531,7 @@ castle::castle()
 
 	num = idCounter;
 	owner = idCounter;
-	publication = 0;
+	population = 0;
 	nNeighbours = 0;
 	idCounter++;
 
@@ -1452,7 +1558,7 @@ void castle::addInPath(path * inPath, gate& ingate)
 void castle::addSoldier(soldier & newSoldier)
 {
 	allSoldier.insert(newSoldier);
-	publication++;
+	population++;
 }
 
 int castle::getNum()
@@ -1461,6 +1567,60 @@ int castle::getNum()
 }
 
 
+
+void castle::attack()
+{
+	int realCapacity = capacity;
+	if (allSoldier.getsize() < realCapacity)
+	{
+		realCapacity = allSoldier.getsize();
+	}
+	int enemypopulation = 0;
+	for (int i = 0; i < nNeighbours; i++)
+	{
+		enemypopulation += Neighbours[i]->getpopulation();
+	}
+	int sendcount[100];
+	double ezafi=0;
+	for (int i = 0; i < nNeighbours; i++)
+	{
+		double checking = 0;
+		checking=realCapacity * (Neighbours[i]->getpopulation() / enemypopulation);
+		sendcount[i] = checking / 1;
+		ezafi += fmod(checking,1);
+	}
+	int minRoad = 1000;
+	int whereMinRoad = 0;
+	for (int i = 0; i < nNeighbours; i++)
+	{
+		if (sendcount[i] < minRoad)
+		{
+			whereMinRoad = i;
+			minRoad = sendcount[i];
+		}
+	}
+	sendcount[whereMinRoad] += fmod(ezafi, 1);
+	for (int i = 0; i < nNeighbours; i++)
+	{
+		army* sendingArmy = new army(outPath[i], outPath[i]->getTo());
+		for (int j = 0; j < sendcount[i]; j++)
+		{
+			sendingArmy->addToArmy(allSoldier.attakToNeighber());
+			allSoldier.remove(allSoldier.attakToNeighber());
+			outPath[i]->stepWay();
+			outPath[i]->addArmy(sendingArmy);
+		}
+	}
+}
+
+void castle::wardef()
+{
+}
+
+int castle::getpopulation()
+{
+	return population;
+}
 
 
 
@@ -1552,7 +1712,8 @@ int main()
 		{
 			for (int c = 0; c < ncastle; c++)
 			{
-				
+				allCastles[c].attack();
+				allCastles[c].wardef();
 			}
 		}
 	}
@@ -1587,3 +1748,4 @@ int main()
 	}
 	return 0;
 }
+
