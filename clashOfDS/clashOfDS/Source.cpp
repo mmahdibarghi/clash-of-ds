@@ -1802,7 +1802,7 @@ int main()
 				path* fromPath = new path(roadlength, roadlength / speedOfsoldiers, &allCastles[i], &allCastles[j], newgate);
 				allCastles[i].addToNeighbours(fromPath, &allCastles[j]);
 				allCastles[j].addInPath(fromPath, *newgate);
-				allNodes[i].addConnection(&allNodes[j]);
+				//allNodes[i].addConnection(&allNodes[j]);
 			}
 		}
 	}
@@ -1823,8 +1823,8 @@ int main()
 
 	}
 	/***************************      now start making DFS array of castles         *******************************************/
-	castle** dfsCastles = new castle*[ncastle];
-	allNodes[0].colornodes(dfsCastles);
+	//castle** dfsCastles = new castle*[ncastle];
+	//allNodes[0].colornodes(dfsCastles);
 	/*
 	for (int i = 0; i < ncastle; i++)
 	{
