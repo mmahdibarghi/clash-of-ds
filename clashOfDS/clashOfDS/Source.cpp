@@ -106,6 +106,8 @@ public:
 	int id;
 	castle* getHome();
 	void setfiboAttack(fiboNode* inputNode);
+	fiboNode* getFibboAttack();
+	void die();
 private:
 	int power;
 	castle* home;
@@ -166,6 +168,13 @@ void soldier::setfiboAttack(fiboNode *inputNode)
 {
 	fiboattak = inputNode;
 }
+
+fiboNode * soldier::getFibboAttack()
+{
+	return fiboattak;
+}
+
+
 
 
 
@@ -973,6 +982,7 @@ public:
 	~fiboNode();
 	//data int->soldier&
 	fiboNode(soldier& data);
+	int  getDeep();
 private:
 	fiboNode* linkLeft;
 	fiboNode* linkRight;
@@ -1008,6 +1018,11 @@ fiboNode::fiboNode(soldier& data)
 	nodePower = data.getPower();
 	this->data = data;
 	data.setfiboAttack(this);
+}
+
+int fiboNode::getDeep()
+{
+	return deep;
 }
 
 fiboNode::fiboNode()
@@ -1534,6 +1549,9 @@ public:
 	int getForWhoNow();
 	int getForWhoWas();
 	soldier& findForDef(int power);
+	void deadBack(soldier* deadSoldier);
+	int getAvlpopulation();
+	void lose(int winnerNum);
 private:
 	int num;
 	int owner;
@@ -1662,6 +1680,21 @@ int castle::getForWhoWas()
 soldier & castle::findForDef(int power)
 {
 	return this->allSoldier.sendGateWar(power);
+}
+
+void castle::deadBack(soldier * deadSoldier)
+{
+	dead.push(*deadSoldier);
+}
+
+int castle::getAvlpopulation()
+{
+	return allSoldier.getsize();
+}
+
+void castle::lose(int winnerNum)
+{
+	this->owner = winnerNum;
 }
 
 
@@ -1887,6 +1920,80 @@ void gate::makeDecision(int castlePopulation)
 // farayand jang
 	for (int i = 0; i < howManycomein; i++)
 	{
-		//ourSoldier[i]->
+		if (ourSoldier[i]->getFibboAttack()->getDeep() < enemySoldier[i]->getFibboAttack()->getDeep())
+		{
+			// we win
+			this->forWhichCastle->addSoldier(*ourSoldier[i]);
+			enemySoldier[i]->die();
+			warZone.pop(enemySoldier[i]->getFibboAttack());
+			enemySoldier[i]->setfiboAttack (nullptr);
+		}
+		else if (ourSoldier[i]->getFibboAttack()->getDeep() > enemySoldier[i]->getFibboAttack()->getDeep())
+		{
+			//enemy win
+			this->waitToAttack.push(*enemySoldier[i]);
+			ourSoldier[i]->die();
+			warZone.pop(ourSoldier[i]->getFibboAttack());
+			ourSoldier[i]->setfiboAttack (nullptr);
+			if (this->forWhichCastle->getAvlpopulation() == 0)
+			{
+				this->forWhichCastle->lose(enemySoldier[i]->getHome()->getForWhoWas());
+			}
+		}
+		else
+		{
+			if (ourSoldier[i]->getPower() > enemySoldier[i]->getPower())
+			{
+				// we win
+				this->forWhichCastle->addSoldier(*ourSoldier[i]);
+				enemySoldier[i]->die();
+				warZone.pop(enemySoldier[i]->getFibboAttack());
+				enemySoldier[i]->setfiboAttack ( nullptr);
+			}
+			else
+			{
+				//enemy win
+				this->waitToAttack.push(*enemySoldier[i]);
+				ourSoldier[i]->die();
+				warZone.pop(ourSoldier[i]->getFibboAttack());
+				ourSoldier[i]->setfiboAttack ( nullptr);
+				if (this->forWhichCastle->getAvlpopulation() == 0)
+				{
+					this->forWhichCastle->lose(enemySoldier[i]->getHome()->getForWhoWas());
+				}
+			}
+		}
 	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void soldier::die()
+{
+	this->home->deadBack(this);
+	this->castleWhereIs = home;
+	this->pathWhereIs = nullptr;
+
 }
