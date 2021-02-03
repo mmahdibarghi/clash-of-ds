@@ -104,6 +104,8 @@ public:
 	void setwayGo(path* goingToGo);
 	int getPower();
 	int id;
+	castle* getHome();
+	void setfiboAttack(fiboNode* inputNode);
 private:
 	int power;
 	castle* home;
@@ -153,6 +155,16 @@ void soldier::setwayGo(path * goingToGo)
 int soldier::getPower()
 {
 	return power;
+}
+
+castle * soldier::getHome()
+{
+	return home;
+}
+
+void soldier::setfiboAttack(fiboNode *inputNode)
+{
+	fiboattak = inputNode;
 }
 
 
@@ -377,6 +389,7 @@ public:
 	soldier& attakToNeighber();
 	soldier& findDeepthNode(avlNode*subtree,int depth);
 	int getsize();
+	avlNode* getRoot();
 };
 
 
@@ -845,6 +858,11 @@ int avlTree::getsize()
 	return size;
 }
 
+avlNode * avlTree::getRoot()
+{
+	return root;
+}
+
 
 void avlTree::findnearNode(avlNode* findRoot, int inpower, int mindis)
 {
@@ -989,6 +1007,7 @@ fiboNode::fiboNode(soldier& data)
 	//data
 	nodePower = data.getPower();
 	this->data = data;
+	data.setfiboAttack(this);
 }
 
 fiboNode::fiboNode()
@@ -1343,26 +1362,16 @@ public:
 	gate(castle* mycastle);
 	void pushSoldier(soldier& input);
 	void improveWaitPopulation(int input);
+	void makeDecision(int castlePopulation);
 private:
 	fiboHeap warZone;
 	queue<soldier> waitToAttack;
 	int waitSoldier;
 	castle* forWhichCastle;
+	vector<soldier*> ourSoldier;
+	vector<soldier*> enemySoldier;
 
 };
-
-gate::gate()
-{
-}
-
-gate::~gate()
-{
-}
-
-gate::gate(castle * mycastle)
-{
-	this->forWhichCastle = mycastle;
-}
 
 
 
@@ -1522,7 +1531,9 @@ public:
 	void wardef();
 	int getNum();
 	int getpopulation();
-
+	int getForWhoNow();
+	int getForWhoWas();
+	soldier& findForDef(int power);
 private:
 	int num;
 	int owner;
@@ -1627,11 +1638,30 @@ void castle::attack()
 
 void castle::wardef()
 {
+	for (int i = 0; i < gates.getSizeOfFullBlocks(); i++)
+	{
+		gates[i].makeDecision(this->population);
+	}
 }
 
 int castle::getpopulation()
 {
 	return population;
+}
+
+int castle::getForWhoNow()
+{
+	return owner;
+}
+
+int castle::getForWhoWas()
+{
+	return num;
+}
+
+soldier & castle::findForDef(int power)
+{
+	return this->allSoldier.sendGateWar(power);
 }
 
 
@@ -1761,6 +1791,66 @@ int main()
 	return 0;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**********************      angry class!!!        ******************/
+
+
+
+gate::gate()
+{
+}
+
+gate::~gate()
+{
+}
+
+gate::gate(castle * mycastle)
+{
+	this->forWhichCastle = mycastle;
+}
+
+
 void gate::pushSoldier(soldier & input)
 {
 	waitToAttack.push(input);
@@ -1770,4 +1860,33 @@ void gate::improveWaitPopulation(int input)
 {
 	this->waitSoldier += input;
 
+}
+
+void gate::makeDecision(int castlePopulation)
+{
+	int howManycomein = waitSoldier / castlePopulation;
+	if (waitSoldier % castlePopulation)
+	{
+		howManycomein++;
+	}
+	for (int i = 0; i < howManycomein; i++)
+	{
+		soldier& tmp = this->waitToAttack.pop();
+		if (tmp.getHome()->getForWhoWas() == this->forWhichCastle->getForWhoNow())
+		{
+			this->forWhichCastle->addSoldier(tmp);
+		}
+		else
+		{
+			enemySoldier.push_back(&tmp);
+			warZone.insert(tmp);
+			ourSoldier.push_back(&this->forWhichCastle->findForDef(tmp.getPower()));
+			warZone.insert(this->forWhichCastle->findForDef(tmp.getPower()));
+		}
+	}
+// farayand jang
+	for (int i = 0; i < howManycomein; i++)
+	{
+		//ourSoldier[i]->
+	}
 }
