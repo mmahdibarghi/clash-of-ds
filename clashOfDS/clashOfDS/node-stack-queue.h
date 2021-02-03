@@ -60,7 +60,7 @@ public:
 	stack();
 	~stack();
 	void push(t input);
-	void pop();
+	t pop();
 	int getsize();
 	void print();
 	t& search(t input);
@@ -106,20 +106,24 @@ void stack<t>::push(t input)
 }
 
 template<typename t>
-void stack<t>::pop()
+t stack<t>::pop()
 {
+	t res;
 	if (size == 0)
 	{
 		//throw "empty stack";
-		return;
+		t nullthing;
+		return nullthing;
 	}
 	else
 	{
 		node<t>*tmp = head;
+		res = head->getdata();
 		head = head->getnext();
 		delete tmp;
 	}
 	size--;
+	return res;
 }
 
 template<typename t>

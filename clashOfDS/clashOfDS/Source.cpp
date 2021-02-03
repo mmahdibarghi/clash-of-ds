@@ -9,12 +9,14 @@
 using namespace std;
 int capacity;
 double deadCapacity;
+double totalComeBack=0;
 int idCounter=0;
 int soldiercounter = 0;
 int speedOfsoldiers = 0;
 int ncastle = 0;
 int days;
 int theWinner = 0;
+int allpopulation[100];
 class path;
 class soldier;
 class army;
@@ -512,9 +514,7 @@ void avlTree::print() {
 	if (root == nullptr)
 		cout << "There is no soldier!" << endl;
 
-	else if (root->getHeight() > 4)
-		std::cout << "Not currently supported!" <<
-		std::endl;
+	
 
 	else {
 		int max = root->getHeight();
@@ -1378,6 +1378,7 @@ public:
 	void pushSoldier(soldier& input);
 	void improveWaitPopulation(int input);
 	void makeDecision(int castlePopulation);
+	void print();
 private:
 	fiboHeap warZone;
 	queue<soldier> waitToAttack;
@@ -1402,6 +1403,7 @@ public:
 	void forward();
 	int getWhereIs();
 	void goInEnemyCastle(gate* outGateWay);
+	void print();
 private:
 	queue<soldier> all;
 	int whereInRoad;
@@ -1462,6 +1464,12 @@ void army::goInEnemyCastle(gate * outGateWay)
 
 }
 
+void army::print()
+{
+	cout << "this army is in part " << whereInRoad << " of the road"<<endl;
+	cout << "and" << population << "soldier in this army";
+}
+
 
 class path
 {
@@ -1472,6 +1480,7 @@ public:
 	castle* getTo();
 	void addArmy(army* input);
 	void stepWay();
+	void print();
 private:
 	int length;
 	int step;
@@ -1534,6 +1543,8 @@ void path::stepWay()
 
 
 
+
+
 class castle
 {
 public:
@@ -1544,6 +1555,7 @@ public:
 	void addSoldier(soldier& newSoldier);
 	void attack();
 	void wardef();
+	void health();
 	int getNum();
 	int getpopulation();
 	int getForWhoNow();
@@ -1552,6 +1564,7 @@ public:
 	void deadBack(soldier* deadSoldier);
 	int getAvlpopulation();
 	void lose(int winnerNum);
+	void print();
 private:
 	int num;
 	int owner;
@@ -1662,6 +1675,20 @@ void castle::wardef()
 	}
 }
 
+void castle::health()
+{
+	int tedadNjetYaftegan=0;
+	tedadNjetYaftegan = totalComeBack / 1;
+	totalComeBack -= tedadNjetYaftegan;
+	for (int i = 0; i < tedadNjetYaftegan; i++)
+	{
+		if (dead.getsize() != 0)
+		{
+			this->addSoldier(dead.pop());
+		}
+	}
+}
+
 int castle::getpopulation()
 {
 	return population;
@@ -1679,12 +1706,15 @@ int castle::getForWhoWas()
 
 soldier & castle::findForDef(int power)
 {
+	population--;
 	return this->allSoldier.sendGateWar(power);
+	
 }
 
 void castle::deadBack(soldier * deadSoldier)
 {
 	dead.push(*deadSoldier);
+	
 }
 
 int castle::getAvlpopulation()
@@ -1695,6 +1725,36 @@ int castle::getAvlpopulation()
 void castle::lose(int winnerNum)
 {
 	this->owner = winnerNum;
+}
+
+void castle::print()
+{
+	cout << "casle was for team number " << num << endl;
+	cout << "and now team number " << owner << " is the owner of castle" << endl;
+	cout << "the population of castle is: " << population << endl;
+	cout << "it has: " << nNeighbours << endl;
+	cout << "the neighbour castles are: " << endl;
+	for (int i = 0; i < Neighbours.getSizeOfFullBlocks(); i++)
+	{
+		cout<<Neighbours[i]->getForWhoNow()<<endl;
+	}
+	cout << endl << endl << endl;
+	cout << "all out going path:" << endl;
+	for (int i = 0; i < outPath.getSizeOfFullBlocks(); i++)
+	{
+		outPath[i]->print();
+	}
+	cout << "and this castle gates situations is:" << endl;
+	for (int i = 0; i < gates.getSizeOfFullBlocks(); i++)
+	{
+		gates[i].print();
+	}
+
+
+	cout << endl << endl << endl;
+	cout << "and this soldiers avl tree of the castle" << endl;
+	allSoldier.print();
+
 }
 
 
@@ -1752,6 +1812,7 @@ int main()
 	{
 		cout << "Enter number of soldier in castle " << i+1 << " :" << endl;
 		cin >> nsoldier;
+		allpopulation[i] = nsoldier;
 		for (int j = 0; j < nsoldier; j++)
 		{
 			cout << "Enter soldier " << j << " power:" << endl;
@@ -1789,8 +1850,31 @@ int main()
 			{
 				allCastles[c].attack();
 				allCastles[c].wardef();
+				allCastles[c].health();
+			}
+			totalComeBack += deadCapacity;
+		}
+
+		cout << days << " passed in the game!"<<endl;
+		cout << "Now enter which castle do you want its informations(enter 0 to show all castles informations):"<<endl;
+		int chCastle=0;
+		cin >> chCastle;
+		if (chCastle == 0)
+		{
+			for (int i = 0; i < ncastle; i++)
+			{
+				cout << "castle number " << i << " informations";
+				allCastles[i].print();
+				cout << endl << endl << endl;
 			}
 		}
+		else
+		{
+			cout << "castle number " << chCastle << " informations"<<endl;
+			allCastles[chCastle].print();
+
+		}
+
 	}
 
 
@@ -1813,13 +1897,38 @@ int main()
 
 	else
 	{
-		while (theWinner == 0)
+		while (1)
 		{
 			for (int c = 0; c < ncastle; c++)
 			{
-
+				allCastles[c].attack();
+				allCastles[c].wardef();
+				allCastles[c].health();
+			}
+			int g = 1;
+			int ch = allCastles[0].getForWhoNow();
+			bool winnerfind=1;
+			for (; g < ncastle; g++)
+			{
+				if (ch != allCastles[g].getForWhoNow())
+				{
+					winnerfind = 0;
+					break;
+				}
+			
+			}
+			if (winnerfind)
+			{
+				theWinner = ch;
+				break;
 			}
 		}
+
+
+		cout << "The king of map is castle Number: " << theWinner << endl;
+		cout << "it start with " << allpopulation[theWinner] << " soldiers" << endl;
+		cout << "the winner castle information: " << endl << endl << endl;
+		allCastles[theWinner].print();
 	}
 	return 0;
 }
@@ -1966,6 +2075,14 @@ void gate::makeDecision(int castlePopulation)
 	}
 }
 
+void gate::print()
+{
+	cout << "the warzone (fibonocci heap) in this gate is like:" << endl << endl;
+	warZone.printFibo();
+	cout << endl << endl << endl << endl << endl;
+	cout << "and" << waitSoldier << " enemy soldiers are behide the gates";
+}
+
 
 
 
@@ -1996,4 +2113,16 @@ void soldier::die()
 	this->castleWhereIs = home;
 	this->pathWhereIs = nullptr;
 
+}
+
+
+void path::print()
+{
+	cout << "it 's length is: " << length << endl;
+	cout << "soldiers pass it in " << step << " days";
+	cout << "it 's from " << from->getForWhoNow() << " castle to castle " << to->getForWhoNow();
+	for (int i = 0; i < inRoad.getSizeOfFullBlocks(); i++)
+	{
+		inRoad[i]->print();
+	}
 }
